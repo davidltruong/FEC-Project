@@ -9,7 +9,7 @@ import data from '../../mockFiles/sampleData.js';
 import Answer from './answer.jsx';
 import Question from './question.jsx';
 import $ from 'jquery';
-import imgur from '../../../../server/imgur.js';
+// import imgur from '../../../../server/imgur.js';
 
 import withTracker from '../../components/Sharables/withTracker.js';
 
@@ -46,7 +46,7 @@ class Qna extends React.Component {
       url: '/qa/questions',
       data: {
         'product_id': this.props.productId,
-        count: 100
+        count: 50
       },
       success: (data) => {
         data.results.sort(function(a, b) {
@@ -389,19 +389,49 @@ class Qna extends React.Component {
   fileHandler(e) {
     var file = new FormData();
     file.append('image', e.target.files[0], e.target.files[0].name);
-    imgur.postData(file, (err, data) => {
-      if (err) {
-        console.log('Error uploading photo');
-        console.log(err);
-      } else {
-        var picture = data.data.data.link;
-        var files = this.state.files;
-        files.push(picture);
-        this.setState({files: files});
-        console.log('uploaded picture');
-        console.log(picture)
-      }
-    });
+    fetch('upload', {
+      method: 'POST',
+      body: file,
+      // headers: {
+      //   'Content-Type': 'multipart/form-data'
+      // }
+    })
+      .then((data) => console.log(data))
+      .catch((err) => ('Error occured', err));
+    // $.ajax({
+    //   method: 'POST',
+    //   url: '/upload',
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data'
+    //   },
+    //   body: file,
+    //   success: (data) => {
+    //     // var picture = data.data.data.link;
+    //     // var files = this.state.files;
+    //     // files.push(picture);
+    //     // this.setState({files: files});
+    //     console.log('uploaded picture');
+    //     for (const key of file.keys()) {
+    //       console.log(key)
+    //     }
+    //     for (const value of file.values()) {
+    //       console.log(value)
+    //     }
+    //   }
+    // });
+    // imgur.postData(file, (err, data) => {
+    //   if (err) {
+    //     console.log('Error uploading photo');
+    //     console.log(err);
+    //   } else {
+    //     var picture = data.data.data.link;
+    //     var files = this.state.files;
+    //     files.push(picture);
+    //     this.setState({files: files});
+    //     console.log('uploaded picture');
+    //     console.log(picture)
+    //   }
+    // });
   }
 
 

@@ -1,11 +1,31 @@
 // import enviroment variables
 require('dotenv').config();
+// const IMGUR = process.env;
 
 const express = require('express');
 const path = require('path');
 const app = express();
 const PORT = 5555;
 const api = require('./api.js');
+
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+const imgur = require('./imgur.js');
+// const request = require('request');
+
+
+// const multer = require('multer');
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, '../Images/');
+//   },
+//   filename: (req, file, cb) => {
+//     console.log('test', file);
+//     cb(null, Date.now() + path.extname(file.originalname));
+//   }
+// });
+
+// const upload = multer({storage: storage});
 
 app.get('*.js', function (req, res, next) {
   req.url = req.url + '.gz';
@@ -20,6 +40,33 @@ app.use(express.urlencoded({extended: true}));
 // set up route to send back html file that points to static assets of bundle.js
 app.get('/:product_id', (req, res) => {
   res.status(200).sendFile(path.join(__dirname, './index.html'));
+});
+
+// const fileUpload = require("express-fileupload");
+// app.use(fileUpload());
+
+app.post('/upload', upload.any(), (req, res) => {
+  console.log('file', req.files);
+  console.log('body', req.body);
+  // const forwardReqConfig = {
+  //   url: 'https://api.imgur.com/3/upload',
+  //   headers: {
+  //     'Authorization': `Client-ID ${IMGUR.IMGUR}`,
+  //     'Content-Type': 'multipart/form-data'
+  //   }
+  // };
+  // var test = req.pipe(request.post(forwardReqConfig))
+  // test.on('end', (data) => {
+  //   console.log(data)
+  // })
+  imgur.postData(req.files[0], (err, data) => {
+    if (err) {
+      console.log(err.response);
+      console.log('Error uploading image');
+    } else {
+      res.send(data);
+    }
+  });
 });
 
 app.get('/qa/questions', (req, res) => {

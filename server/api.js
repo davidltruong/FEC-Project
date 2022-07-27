@@ -1,6 +1,5 @@
 /* create a .env file in your root directory on your virtual machine. Include your token like this:
 TOKEN="your_token" */
-
 const API_KEY = process.env;
 
 const axios = require('axios');
